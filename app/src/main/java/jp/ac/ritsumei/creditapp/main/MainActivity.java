@@ -1,4 +1,4 @@
-package jp.ac.ritsumei.creditapp.app;
+package jp.ac.ritsumei.creditapp.main;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
