@@ -28,12 +28,11 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	protected static final String 	DEFAULT_DB_FILE_NAME = "credit.db";
-	protected String  DB_NAME;
-	
 
-	public static final String		CURRICULUM_TABLE_NAME			= "curriculum";
+	public static final String		CURRICULUM_TABLE_NAME = "curriculum";
 	public static final String		COMPOSITION_TABLE_NAME = "composition";
 	public static final String		USER_TABLE_NAME = "user";
+    public static final String      TIME_TABLE_NAME = "timetable";
 
 
 	private final String[] DATABASE_TABLE_NAMES;
@@ -43,13 +42,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String[] DATABASE_DEFINITIONS = {
 				/*---------------------------------------------------------------------------------*/
 				CURRICULUM_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "time TEXT, value TEXT )",
+				+ "university TEXT, department TEXT, discipline TEXT, year INTEGER, brand TEXT))",
 				/*---------------------------------------------------------------------------------*/
 				COMPOSITION_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "time TEXT, value TEXT )",
+				+ "brand TEXT, parent_brand TEXT)",
 				/*---------------------------------------------------------------------------------*/
 				USER_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "time TEXT, essid TEXT, bssid TEXT, lat REAL,lon REAL,  maxrssi INTEGER )"
+				+ "sum_credit INTEGER)",
+                TIME_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
+                        + "term TEXT, hour INTEGER,  subject TEXT, room TEXT," +
+                        " brand TEXT, attendance INTEGER, credit INTEGER)"
 	};
 
 
@@ -140,17 +142,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-	synchronized protected void insertWifiDataMAX(JSONArray scanResults) throws IOException, JSONException {
+    //TODO データベーススキーマの変更があるかも
+    /**
+     * JSONArrayの先頭にはテーブル名を入れること 'table_name'
+     * @param scanResults
+     * @throws IOException
+     * @throws JSONException
+     */
+	synchronized protected void insertData(JSONArray scanResults) throws IOException, JSONException {
 
 		SQLiteDatabase db = getWritableDatabase();
 		if (db.isReadOnly()){
@@ -160,21 +159,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteStatement stmt = null;
 		db.beginTransaction();
 		try {
-			stmt = db.compileStatement("INSERT INTO " + CURRICULUM_TABLE_NAME +
-					"(time, essid, bssid, lat, lon, rssi) VALUES(?, ?, ?, ?,?,?)");
+            JSONObject dbName = (JSONObject) scanResults.get(0);
 
-			for (int i = 0 ; i < scanResults.length() ; i++) {
-				JSONObject ap = (JSONObject) scanResults.get(i);
+             if(CURRICULUM_TABLE_NAME.equals(dbName.getString("table_name"))){
+                 stmt = db.compileStatement("INSERT INTO " + CURRICULUM_TABLE_NAME +
+                         "(university, department, discipline, year, brand) " +
+                         "VALUES(?, ?, ?, ?,?)");
+                 for (int i = 1 ; i < scanResults.length() ; i++) {
+                     JSONObject datas = (JSONObject) scanResults.get(i);
 
-				stmt.bindString(1, SHARED_DATE_FORMAT.format(new Date(ap.getLong("time"))));
+                     stmt.bindString(1, datas.getString("university"));
+                     stmt.bindString(2, datas.getString("department"));
+                     stmt.bindString(3, datas.getString("discipline"));
+                     stmt.bindDouble(4, datas.getInt("year"));
+                     stmt.bindString(5, datas.getString("brand"));
+                     stmt.executeInsert();
+                 }
+             }else if (COMPOSITION_TABLE_NAME.equals(dbName.getString("table_name"))){
+                stmt = db.compileStatement("INSERT INTO " + COMPOSITION_TABLE_NAME +
+                        "(brand, parent_brand) " +
+                        "VALUES(?, ?)");
+                for (int i = 1 ; i < scanResults.length() ; i++) {
+                    JSONObject datas = (JSONObject) scanResults.get(i);
 
-				stmt.bindString(2, ap.getString("essid"));
-				stmt.bindString(3, ap.getString("bssid"));
-				stmt.bindDouble(4, ap.getDouble("lat"));
-				stmt.bindDouble(5, ap.getDouble("lon"));
-				stmt.bindLong(6, ap.getInt("rssi"));
-				stmt.executeInsert();
-			}
+                    stmt.bindString(1, datas.getString("brand"));
+                    stmt.bindString(2, datas.getString("parent_brand"));
+                    stmt.executeInsert();
+                }
+             }else if (USER_TABLE_NAME.equals(dbName.getString("table_name"))){
+                stmt = db.compileStatement("INSERT INTO " + USER_TABLE_NAME +
+                        "(sum_credit) " +
+                        "VALUES(?)");
+                for (int i = 1 ; i < scanResults.length() ; i++) {
+                    JSONObject datas = (JSONObject) scanResults.get(i);
+
+                    stmt.bindDouble(1, datas.getInt("sum_credit"));
+                    stmt.executeInsert();
+                }
+             }else if (TIME_TABLE_NAME.equals(dbName.getString("table_name"))){
+                stmt = db.compileStatement("INSERT INTO " + TIME_TABLE_NAME +
+                        "(term , hour, subject, room, brand, attendance, credit) " +
+                        "VALUES(?, ?, ?, ? ,? ,? ,?)");
+                for (int i = 1 ; i < scanResults.length() ; i++) {
+                    JSONObject datas = (JSONObject) scanResults.get(i);
+
+                    stmt.bindString(1, datas.getString("term"));
+                    stmt.bindDouble(2, datas.getInt("hour"));
+                    stmt.bindString(3, datas.getString("subject"));
+                    stmt.bindString(4, datas.getString("room"));
+                    stmt.bindString(5, datas.getString("brand"));
+                    stmt.bindDouble(6, datas.getInt("attendance"));
+                    stmt.bindDouble(7, datas.getInt("credit"));
+                    stmt.executeInsert();
+                }
+             }else{
+                 throw new JSONException("JSONArray[0] is 'table_name' !!");
+             }
+
 			db.setTransactionSuccessful();
 		}catch (IllegalStateException e) {
 			Log.w(getClass().getSimpleName(), 
@@ -190,69 +231,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 
-	/**
-	 * insert the magneticfieled table
-	 * @param scanResults
-	 * @throws java.io.IOException
-	 * @throws org.json.JSONException
-	 */
-	synchronized protected void insertMagneticFieled(long time , JSONArray scanResults)
-			throws IOException, JSONException {
-		SQLiteDatabase db = getWritableDatabase();
-		if (db.isReadOnly()) {
-			throw new IOException("Cannot get writable access to DB.");
-		}
-
-		SQLiteStatement stmt = null;
-		db.beginTransaction();
-
-		try {
-			stmt = db.compileStatement("INSERT INTO "
-					+ CURRICULUM_TABLE_NAME
-					+ "(time,value) VALUES(?, ?)");
-
-			stmt.bindString(1,SHARED_DATE_FORMAT.format(new Date(time)));//SHARED_DATE_FORMAT.format(new Date(scanResults.getLong("time"))));
-			stmt.bindString(2,scanResults.toString());
-			stmt.executeInsert();
-
-			db.setTransactionSuccessful();
-
-		} catch (IllegalStateException e) {
-			Log.w(getClass().getSimpleName(),
-					"perhaps, service was restarted or un/reinstalled.", e);
-		} finally {
-
-			db.endTransaction();
-			if (stmt != null) {
-				stmt.clearBindings();
-				stmt.close();
-			}
-		}
+	public void insertDataAsyncTask(JSONArray result){
+		new InsertDataTask().execute(result);
 	}
 
-
-	/**
-	 * insert wifi max data using asyncTask
-	 * @param result
-	 */
-	public void insertWiFiDataMAXAsyncTask(JSONArray result){
-		new InsertWiFiDataMAXTask().execute(result);
-	}
-
-
-
-
-	/**
-	 * insert wifi data (max rssi)
-	 * logged data will be insert to DB by async task to decrease the process time in UI thread
-	 * and logging data will be add a buffer to decrease the times of inserting
-	 */
-	protected class InsertWiFiDataMAXTask extends AsyncTask<JSONArray, Integer, Long>{
-
+	protected class InsertDataTask extends AsyncTask<JSONArray, Integer, Long>{
 		@Override
 		protected Long doInBackground(JSONArray... params) {
 			try {
-				insertWifiDataMAX(params[0]);
+				insertData(params[0]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (JSONException e) {
