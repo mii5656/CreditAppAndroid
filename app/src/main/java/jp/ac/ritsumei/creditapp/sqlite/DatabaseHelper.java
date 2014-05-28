@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 
@@ -39,10 +38,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat SHARED_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.JAPANESE);
 
 
+
+
 	private static final String[] DATABASE_DEFINITIONS = {
 				/*---------------------------------------------------------------------------------*/
 				CURRICULUM_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "university TEXT, department TEXT, discipline TEXT, year INTEGER, brand TEXT))",
+				+ "university TEXT, department TEXT, discipline TEXT, year INTEGER, brand TEXT)",
 				/*---------------------------------------------------------------------------------*/
 				COMPOSITION_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
 				+ "brand TEXT, parent_brand TEXT)",
@@ -53,6 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + "term TEXT, hour INTEGER,  subject TEXT, room TEXT," +
                         " brand TEXT, attendance INTEGER, credit INTEGER)"
 	};
+
+
 
 
 	/**
@@ -81,10 +84,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 
+
 	@Override
 	synchronized public void onCreate(SQLiteDatabase db) {
 		createTablesIfNotExist(db);
 	}
+
+
+
 
     /**
      *
@@ -99,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		for(int i = 0 ; i < DATABASE_DEFINITIONS.length ; i++){
 			try {
-				Log.e("createTablesIfNotExist", "CREATE TABLE IF NOT EXISTS " + DATABASE_DEFINITIONS[i]);
+				Log.i("createTablesIfNotExist", "CREATE TABLE IF NOT EXISTS " + DATABASE_DEFINITIONS[i]);
 				sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS " + DATABASE_DEFINITIONS[i]);
 			}catch (IllegalStateException e) {
 				Log.w(getClass().getSimpleName(), 
@@ -135,11 +142,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	}
 
-	synchronized public Cursor selectRawData(String tableName, String[] columns, String selection,
+
+
+	synchronized public Cursor execQuery(String tableName, String[] columns, String selection,
 			String[] selectionArgs, String sortOrder, String limit) throws IOException, SQLiteException {
 		SQLiteDatabase db = getReadableDatabase();
 		return db.query(tableName, columns, selection, selectionArgs, null, null, sortOrder, limit);
 	}
+
+
+    synchronized public Cursor execRawQuery(String sql) throws IOException, SQLiteException {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(sql,null);
+    }
 
 
     //TODO データベーススキーマの変更があるかも
@@ -248,6 +263,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return null;
 		}
 	}
+
+
+
 
 }
 
