@@ -53,7 +53,6 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-
     private void checkSQLite(){
         //dataベースヘルパーを作る
         dbHelper = new DatabaseHelper(this.getApplication());
