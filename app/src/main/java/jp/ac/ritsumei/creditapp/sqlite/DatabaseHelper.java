@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "university TEXT, department TEXT, discipline TEXT, year INTEGER, brand TEXT)",
 				/*---------------------------------------------------------------------------------*/
 				COMPOSITION_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "brand TEXT, parent_brand TEXT)",
+				+ "brand TEXT, parent_brand TEXT,credit INTEGER)",
 				/*---------------------------------------------------------------------------------*/
 				USER_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
 				+ "sum_credit INTEGER)",
@@ -192,13 +192,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                  }
              }else if (COMPOSITION_TABLE_NAME.equals(dbName.getString("table_name"))){
                 stmt = db.compileStatement("INSERT INTO " + COMPOSITION_TABLE_NAME +
-                        "(brand, parent_brand) " +
-                        "VALUES(?, ?)");
+                        "(brand, parent_brand,credit) " +
+                        "VALUES(?, ?, ?)");
                 for (int i = 1 ; i < scanResults.length() ; i++) {
                     JSONObject datas = (JSONObject) scanResults.get(i);
 
                     stmt.bindString(1, datas.getString("brand"));
                     stmt.bindString(2, datas.getString("parent_brand"));
+                    stmt.bindDouble(3, datas.getInt("credit"));
                     stmt.executeInsert();
                 }
              }else if (USER_TABLE_NAME.equals(dbName.getString("table_name"))){
@@ -265,7 +266,86 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 
+    /**
+     * カリキュラム情報の入力
+     */
+    public void initalInsertRitsData(){
 
+         //情報理工学部
+        try {
+            //カリキュラムテーブル情報
+            insertData(makeCurriculumJSON("立命館大学", "情報理工学部", "", 2012, "卒業単位数"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"外国語科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"教養科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"専門科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"専門基礎科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"共通専門科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"学科専門科目"));
+            insertData(makeCurriculumJSON("立命館大学","情報理工学部","",2012,"その他"));
+
+            //区分
+            insertData(makeCompositionJSON("卒業単位数","null",124));
+            insertData(makeCompositionJSON("外国語科目","卒業単位数",10));
+            insertData(makeCompositionJSON("教養科目","卒業単位数",14));
+            insertData(makeCompositionJSON("専門科目","卒業単位数",100));
+            insertData(makeCompositionJSON("専門基礎科目","専門科目",12));
+            insertData(makeCompositionJSON("共通専門科目","専門科目",32));
+            insertData(makeCompositionJSON("学科専門科目","専門科目",46));
+            insertData(makeCompositionJSON("その他","卒業単位数",0));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //TODO その他学部情報
+
+    }
+
+
+    public JSONArray makeCurriculumJSON(String univ, String depart, String discipline, int year, String brand){
+        JSONArray curriculumJSON = new JSONArray();
+
+        JSONObject table = new JSONObject();
+        JSONObject data = new JSONObject();
+        try {
+            table.put("table_name", CURRICULUM_TABLE_NAME);
+            curriculumJSON.put(table);
+
+            data.put("university",univ);
+            data.put("department",depart);
+            data.put("discipline",discipline);
+            data.put("year",year);
+            data.put("brand",brand);
+
+            curriculumJSON.put(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  curriculumJSON;
+    }
+
+
+    public JSONArray makeCompositionJSON(String brand, String parent, int credit){
+        JSONArray curriculumJSON = new JSONArray();
+
+        JSONObject table = new JSONObject();
+        JSONObject data = new JSONObject();
+        try {
+            table.put("table_name", COMPOSITION_TABLE_NAME);
+            curriculumJSON.put(table);
+
+            data.put("parent_brand",parent);
+            data.put("credit",credit);
+            data.put("brand",brand);
+
+            curriculumJSON.put(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  curriculumJSON;
+    }
 
 }
 

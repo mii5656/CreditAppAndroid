@@ -1,5 +1,7 @@
 package jp.ac.ritsumei.creditapp.main;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,19 +17,52 @@ import java.io.IOException;
 
 import jp.ac.ritsumei.creditapp.app.R;
 import jp.ac.ritsumei.creditapp.sqlite.DatabaseHelper;
+import jp.ac.ritsumei.creditapp.util.AppConstants;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private DatabaseHelper dbHelper;
+    private SharedPreferences settingPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //dataベースヘルパーを作る
+        dbHelper = new DatabaseHelper(this.getApplication());
+
         //TODO sqliteのチェック
         checkSQLite();
+
+
+        //状態確認用
+         settingPref =
+                this.getSharedPreferences(AppConstants.PREF_NAME, Context.MODE_PRIVATE );
+
+        //データベース情報登録確認
+        if(!settingPref.getBoolean(AppConstants.INSERT_DB_INFO,false)){//登録されてない場合
+            //初期値入力
+            dbHelper.initalInsertRitsData();
+            settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true);
+        }
+
+
+        //保存されている値を読み出す 第２引数は保存されてなかった場合
+        String state = settingPref.getString(AppConstants.SETTING_STATE, AppConstants.STATE_CARRICULUM);
+
+        //TODO 画面遷移
+        if(AppConstants.STATE_TIMETABLE.equals(state)){//時間割画面
+
+        }else if(AppConstants.STATE_CARRICULUM.equals(state)){//初期画面
+             //ボタンの登録、読み込み DBから
+
+        }else if(AppConstants.STATE_PRESENT_SUBJECT.equals(state)){//時間割登録画面
+
+        }else{//取得済み科目登録画面
+
+        }
     }
 
 
@@ -54,8 +89,6 @@ public class MainActivity extends ActionBarActivity {
 
 
     private void checkSQLite(){
-        //dataベースヘルパーを作る
-        dbHelper = new DatabaseHelper(this.getApplication());
 
         //dataを入れる。
         JSONArray datum = new JSONArray();
