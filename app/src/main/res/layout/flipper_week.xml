@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="0"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/hour"
+        android:id="@+id/textViewHour" />
+
+    <TextView
+        android:layout_width="0"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/subject_name"
+        android:id="@+id/textViewSubject" />
+
+    <TextView
+        android:layout_width="0"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/room"
+        android:id="@+id/textViewRoom" />
+
+    <TextView
+        android:layout_width="0"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/attendance_num"
+        android:id="@+id/textViewAttendNum" />
+
+    <Button
+        android:layout_width="0"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/attendance"
+        android:id="@+id/ButtonAttend" />
+</LinearLayout>

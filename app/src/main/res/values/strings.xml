@@ -4,5 +4,14 @@
     <string name="app_name">CreditApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="attendance">出欠</string>
+    <string name="attendance_num">出席回数</string>
+    <string name="room">教室</string>
+    <string name="subject_name">科目名</string>
+    <string name="hour">時限</string>
+    <string name="setting_button">設定</string>
+    <string name="date">日付</string>
+    <string name="calendar">カレンダー</string>
+    <string name="week">週間</string>
 
 </resources>
