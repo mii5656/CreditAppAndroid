@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import jp.ac.ritsumei.creditapp.util.AppConstants;
+
 
 /**
  * SQLiteを用いて端末内に保存
@@ -48,11 +50,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				COMPOSITION_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
 				+ "brand TEXT, parent_brand TEXT,credit INTEGER)",
 				/*---------------------------------------------------------------------------------*/
-				USER_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-				+ "sum_credit INTEGER)",
+				USER_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
+                        + "university TEXT, department TEXT, discipline TEXT, year INTEGER)",
                 TIME_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-                        + "term TEXT, hour INTEGER,  subject TEXT, room TEXT," +
-                        " brand TEXT, attendance INTEGER, credit INTEGER)"
+                        + "term TEXT, day TEXT, hour INTEGER,  subject TEXT, room TEXT," +
+                        " brand TEXT, attendance INTEGER, credit INTEGER, completed INTEGER)"
 	};
 
 
@@ -151,6 +153,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 
+    /**
+     * select文 の入力
+     * @param sql
+     * @return
+     * @throws IOException
+     * @throws SQLiteException
+     */
     synchronized public Cursor execRawQuery(String sql) throws IOException, SQLiteException {
         SQLiteDatabase db = getReadableDatabase();
         return db.rawQuery(sql,null);
@@ -204,28 +213,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
              }else if (USER_TABLE_NAME.equals(dbName.getString("table_name"))){
                 stmt = db.compileStatement("INSERT INTO " + USER_TABLE_NAME +
-                        "(sum_credit) " +
-                        "VALUES(?)");
-                for (int i = 1 ; i < scanResults.length() ; i++) {
-                    JSONObject datas = (JSONObject) scanResults.get(i);
+                        "(university, department, discipline, year) " +
+                        "VALUES(?, ?, ?, ?)");
+                 for (int i = 1 ; i < scanResults.length() ; i++) {
+                     JSONObject datas = (JSONObject) scanResults.get(i);
 
-                    stmt.bindDouble(1, datas.getInt("sum_credit"));
-                    stmt.executeInsert();
-                }
+                     stmt.bindString(1, datas.getString("university"));
+                     stmt.bindString(2, datas.getString("department"));
+                     stmt.bindString(3, datas.getString("discipline"));
+                     stmt.bindDouble(4, datas.getInt("year"));
+
+                     stmt.executeInsert();
+                 }
              }else if (TIME_TABLE_NAME.equals(dbName.getString("table_name"))){
                 stmt = db.compileStatement("INSERT INTO " + TIME_TABLE_NAME +
-                        "(term , hour, subject, room, brand, attendance, credit) " +
-                        "VALUES(?, ?, ?, ? ,? ,? ,?)");
+                        "(term , day,hour, subject, room, brand, attendance, credit,completed) " +
+                        "VALUES(?, ?, ?, ? ,? ,? ,?,?,?)");
                 for (int i = 1 ; i < scanResults.length() ; i++) {
                     JSONObject datas = (JSONObject) scanResults.get(i);
 
                     stmt.bindString(1, datas.getString("term"));
-                    stmt.bindDouble(2, datas.getInt("hour"));
-                    stmt.bindString(3, datas.getString("subject"));
-                    stmt.bindString(4, datas.getString("room"));
-                    stmt.bindString(5, datas.getString("brand"));
-                    stmt.bindDouble(6, datas.getInt("attendance"));
-                    stmt.bindDouble(7, datas.getInt("credit"));
+                    stmt.bindString(2,datas.getString("day"));
+                    stmt.bindDouble(3, datas.getInt("hour"));
+                    stmt.bindString(4, datas.getString("subject"));
+                    stmt.bindString(5, datas.getString("room"));
+                    stmt.bindString(6, datas.getString("brand"));
+                    stmt.bindDouble(7, datas.getInt("attendance"));
+                    stmt.bindDouble(8, datas.getInt("credit"));
+                    stmt.bindDouble(9, datas.getInt("completed"));
+
                     stmt.executeInsert();
                 }
              }else{
@@ -347,6 +363,79 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return  curriculumJSON;
     }
 
+
+    public JSONArray makeUserJSON(String univ, String depart, String discipline, int year){
+        JSONArray userJSON = new JSONArray();
+
+        JSONObject table = new JSONObject();
+        JSONObject data = new JSONObject();
+        try {
+            table.put("table_name", USER_TABLE_NAME);
+            userJSON.put(table);
+
+            data.put("university",univ);
+            data.put("department",depart);
+            data.put("discipline",discipline);
+            data.put("year",year);
+
+            userJSON.put(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  userJSON;
+    }
+
+    public JSONArray makeTimeTableJSON(String term,String day,int hour,String subject ,String room
+            ,String brand,int attendance,int credit,int completed){
+        JSONArray timeTableJSON = new JSONArray();
+
+        JSONObject table = new JSONObject();
+        JSONObject data = new JSONObject();
+        try {
+            table.put("table_name", TIME_TABLE_NAME);
+            timeTableJSON.put(table);
+
+            data.put("term",term);
+            data.put("day",day);
+            data.put("hour",hour);
+            data.put("subject",subject);
+            data.put("room",room);
+            data.put("brand",brand);
+            data.put("attendance",attendance);
+            data.put("credit",credit);
+            data.put("completed",completed);
+
+            timeTableJSON.put(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  timeTableJSON;
+    }
+
+
+
+    //TODO あとで消す  登録された時間割 デバッグ用
+    public void insertDB(){
+
+        try {
+            insertData(makeTimeTableJSON("前期", AppConstants.MONDAY,1,"数学","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,2,"数学1","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,3,"数学2","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,4,"数学3","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,5,"数学4","F201","共通",0,2,0));
+
+            insertData(makeTimeTableJSON("前期",AppConstants.TUESDAYDAY, 1,"英語","F201","共通",0,2,0));
+
+            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,3,"英語2","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,4,"英語3","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学4","F201","共通",0,2,0));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

@@ -1,6 +1,7 @@
 package jp.ac.ritsumei.creditapp.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
         if(!settingPref.getBoolean(AppConstants.INSERT_DB_INFO,false)){//登録されてない場合
             //初期値入力
             dbHelper.initalInsertRitsData();
+            dbHelper.insertDB();
             settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true);
         }
 
@@ -63,6 +65,8 @@ public class MainActivity extends ActionBarActivity {
         }else{//取得済み科目登録画面
 
         }
+
+        startActivity(new Intent(MainActivity.this,TimetableActivity.class));
     }
 
 

@@ -1,65 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/timetable_contents">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-     <Button
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/setting_button"
-         android:id="@+id/Button1"
-         android:layout_marginLeft="15dp"
-         android:layout_marginTop="15dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/date"
-        android:textSize="20dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:id="@+id/extView1"/>
-
-     <Button
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/calendar"
-         android:gravity="left"
-         android:id="@+id/Button2"
-         android:layout_marginLeft="125dp"
-         android:layout_marginTop="7dp"/>
-
-    </LinearLayout>
-
-    <ViewFlipper
-        android:id="@+id/flipper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </ViewFlipper>
-
-
-
-    <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="370dp"
-            android:layout_marginLeft="20dp">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/week"
-            android:id="@+id/btn_week"/>
-
-
-    </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

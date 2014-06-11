@@ -17,6 +17,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="jp.ac.ritsumei.creditapp.main.CreditRegistrationActivity" android:label="@string/app_name"/>
+        <activity android:name="jp.ac.ritsumei.creditapp.main.SettingActivity" android:label="@string/app_name"/>
+        <activity android:name="jp.ac.ritsumei.creditapp.main.TimetableActivity" android:label="@string/app_name"/>
+        <activity android:name="jp.ac.ritsumei.creditapp.main.TimetableRegistrationActivity"
+            android:label="@string/app_name"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:theme="@style/Theme.AppCompat.Light"
+            />
     </application>
+
 
 </manifest>

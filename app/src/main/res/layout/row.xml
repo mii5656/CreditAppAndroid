@@ -4,42 +4,41 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/hour"
-        android:id="@+id/textViewHour" />
+        android:text="@string/null1"
+        android:id="@+id/textViewHourColumn" />
 
     <TextView
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/subject_name"
-        android:id="@+id/textViewSubject" />
+        android:text="@string/null1"
+        android:id="@+id/textViewSubjColumn" />
 
     <TextView
-        android:layout_width="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/room"
-        android:id="@+id/textViewRoom" />
+        android:text="@string/null1"
+        android:id="@+id/textViewRoomColumn" />
 
     <TextView
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1.5"
+        android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/attendance_num"
-        android:id="@+id/textViewAttendNum" />
+        android:text="@string/null1"
+        android:id="@+id/textViewAttendColumn" />
 
     <Button
-        android:layout_width="0"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/attendance"
-        android:id="@+id/ButtonAttend" />
+        android:id="@+id/AttendButton" />
 </LinearLayout>
