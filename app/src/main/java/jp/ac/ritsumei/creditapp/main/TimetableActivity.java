@@ -10,7 +10,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -21,6 +20,7 @@ import jp.ac.ritsumei.creditapp.app.R;
 import jp.ac.ritsumei.creditapp.sqlite.DatabaseHelper;
 import jp.ac.ritsumei.creditapp.util.AppConstants;
 import jp.ac.ritsumei.creditapp.view.FragmentDays;
+import jp.ac.ritsumei.creditapp.view.FragmentWeek;
 
 public class TimetableActivity extends ActionBarActivity {
 
@@ -34,7 +34,7 @@ public class TimetableActivity extends ActionBarActivity {
 
     private boolean hasSaturDay;
     private boolean hasSunDay;
-    private int culumnNum;
+    private int columnNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,15 +61,6 @@ public class TimetableActivity extends ActionBarActivity {
         //現在日時設定
         setCurrentTime();
 
-        //TODO びゅーのせってい
-        setDayFlipper();
-        setWeekFlipper();
-        setMonthFlipper();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
 
@@ -80,30 +71,6 @@ public class TimetableActivity extends ActionBarActivity {
         currentTime = new Time("asia/Tokyo");
         currentTime.setToNow();
         mActionBar.setTitle(getString(R.string.app_name) + "   " + (currentTime.month + 1) + "/" + currentTime.monthDay);
-    }
-
-
-    /**
-     * 曜日ビューの設定
-     */
-    protected void setDayFlipper() {
-
-    }
-
-
-    /**
-     * 週間ビューの設定
-     */
-    protected void setWeekFlipper() {
-
-    }
-
-
-    /**
-     * 月ビューの設定
-     */
-    protected void setMonthFlipper() {
-
     }
 
 
@@ -131,7 +98,6 @@ public class TimetableActivity extends ActionBarActivity {
         }
 
 
-
         Cursor cursor2 = null;
         //コマ数の確認
         try {
@@ -139,12 +105,12 @@ public class TimetableActivity extends ActionBarActivity {
                     + DatabaseHelper.TIME_TABLE_NAME + " where completed = 0 ;");
 
             if (cursor2.moveToFirst()) {
-                culumnNum = cursor2.getInt(0);
-                if (culumnNum < 5) {
-                    culumnNum = 5;
+                columnNum = cursor2.getInt(0);
+                if (columnNum < 5) {
+                    columnNum = 5;
                 }
             } else {
-                culumnNum = 5;
+                columnNum = 5;//適当
             }
             cursor2.close();
         } catch (IOException e) {
@@ -162,13 +128,16 @@ public class TimetableActivity extends ActionBarActivity {
 
         MainTabListener listener = new MainTabListener(this);
 
-        mTabFragments.add(FragmentDays.newInstance(AppConstants.MONDAY, culumnNum, databaseHelper));
-        mTabFragments.add(FragmentDays.newInstance(AppConstants.TUESDAYDAY, culumnNum, databaseHelper));
-        mTabFragments.add(FragmentDays.newInstance(AppConstants.WEDNESDAY, culumnNum, databaseHelper));
-        mTabFragments.add(FragmentDays.newInstance(AppConstants.THURSDAY, culumnNum, databaseHelper));
-        mTabFragments.add(FragmentDays.newInstance(AppConstants.FRIDAY, culumnNum, databaseHelper));
+        mTabFragments.add(FragmentWeek.newInstance(columnNum,hasSaturDay,hasSunDay,databaseHelper));
+
+        mTabFragments.add(FragmentDays.newInstance(AppConstants.MONDAY, columnNum, databaseHelper));
+        mTabFragments.add(FragmentDays.newInstance(AppConstants.TUESDAYDAY, columnNum, databaseHelper));
+        mTabFragments.add(FragmentDays.newInstance(AppConstants.WEDNESDAY, columnNum, databaseHelper));
+        mTabFragments.add(FragmentDays.newInstance(AppConstants.THURSDAY, columnNum, databaseHelper));
+        mTabFragments.add(FragmentDays.newInstance(AppConstants.FRIDAY, columnNum, databaseHelper));
 
 
+        mActionBar.addTab(mActionBar.newTab().setText("週").setTabListener(listener));
         mActionBar.addTab(mActionBar.newTab().setText("月").setTabListener(listener));
         mActionBar.addTab(mActionBar.newTab().setText("火").setTabListener(listener));
         mActionBar.addTab(mActionBar.newTab().setText("水").setTabListener(listener));
@@ -176,16 +145,17 @@ public class TimetableActivity extends ActionBarActivity {
         mActionBar.addTab(mActionBar.newTab().setText("金").setTabListener(listener));
 
         if (hasSaturDay) {
-            mTabFragments.add(FragmentDays.newInstance(AppConstants.SATURDAY, culumnNum, databaseHelper));
+            mTabFragments.add(FragmentDays.newInstance(AppConstants.SATURDAY, columnNum, databaseHelper));
             mActionBar.addTab(mActionBar.newTab().setText("土").setTabListener(listener));
         }
 
         if (hasSunDay) {
-            mTabFragments.add(FragmentDays.newInstance(AppConstants.SUNDAY, culumnNum, databaseHelper));
+            mTabFragments.add(FragmentDays.newInstance(AppConstants.SUNDAY, columnNum, databaseHelper));
             mActionBar.addTab(mActionBar.newTab().setText("日").setTabListener(listener));
         }
 
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
     }
 
 
@@ -218,54 +188,9 @@ public class TimetableActivity extends ActionBarActivity {
     }
 
 
-//    /**
-//     * タブのリスナー
-//     * @param <T>
-//     */
-//    public static class MainTabListener<T extends Fragment>
-//            implements TabListener {
-//
-//        private Fragment fragment;
-//        private final Activity activity;
-//        private final String tag;
-//        private final Class<T> cls;
-//
-//        public MainTabListener(
-//                Activity activity, String tag, Class<T> cls){
-//            this.activity = activity;
-//            this.tag = tag;
-//            this.cls = cls;
-//        }
-//
-//        @Override
-//        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-//        }
-//
-//        @Override
-//        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-//
-//            if(fragment == null) {
-//                fragment = Fragment.instantiate(activity, cls.getName());
-//
-//                ft.add(android.R.id.content, fragment, tag);
-//            }else{
-//                ft.attach(fragment);
-//            }
-//        }
-//
-//        @Override
-//        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-//            if(fragment != null){
-//                ft.detach(fragment);
-//            }
-//        }
-//
-//    }
-
-
     /*
-  * ActionBarのタブリスナー
-  */
+     * ActionBarのタブリスナー
+     */
     public class MainTabListener implements ActionBar.TabListener {
 
         private final Activity activity;
@@ -285,8 +210,8 @@ public class TimetableActivity extends ActionBarActivity {
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
             // TODO Auto-generated method stub
-            Log.i("MainActivity", "onTabReselected " + tab.getText()
-                    + " : position => " + tab.getPosition());
+//            Log.i("MainActivity", "onTabReselected " + tab.getText()
+//                    + " : position => " + tab.getPosition());
         }
 
         /*
@@ -300,8 +225,8 @@ public class TimetableActivity extends ActionBarActivity {
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             // TODO Auto-generated method stub
-            Log.i("MainActivity", "onTabSelected " + tab.getText()
-                    + " : position => " + tab.getPosition());
+//            Log.i("MainActivity", "onTabSelected " + tab.getText()
+//                    + " : position => " + tab.getPosition());
             // Fragmentの置換
             ft.replace(R.id.timetable_contents, mTabFragments.get(tab.getPosition()));
 
@@ -318,8 +243,8 @@ public class TimetableActivity extends ActionBarActivity {
         @Override
         public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
             // TODO Auto-generated method stub
-            Log.i("MainActivity", "onTabUnselected " + tab.getText()
-                    + " : position => " + tab.getPosition());
+//            Log.i("MainActivity", "onTabUnselected " + tab.getText()
+//                    + " : position => " + tab.getPosition());
 
             // Fragment削除
             // ft.remove(mFragment);
