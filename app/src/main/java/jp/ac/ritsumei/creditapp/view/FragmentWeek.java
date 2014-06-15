@@ -26,8 +26,8 @@ public class FragmentWeek extends Fragment {
     /**
      * フラグメントを作成するためのファクトリメソッド
      */
-    public static FragmentDays newInstance(int colunmNum, boolean hasSaturDay, boolean hasSunDay, DatabaseHelper db) {
-        FragmentDays fragment = new FragmentDays();
+    public static FragmentWeek newInstance(int colunmNum, boolean hasSaturDay, boolean hasSunDay, DatabaseHelper db) {
+        FragmentWeek fragment = new FragmentWeek();
 
         Bundle args = new Bundle();
         args.putInt("columnNum", colunmNum);
@@ -53,65 +53,71 @@ public class FragmentWeek extends Fragment {
 
         TableLayout tableLayout = (TableLayout) linearLayout.findViewById(R.id.week_table);
 
-        List<TableRow> rows = makeTableRow(getArguments().getInt("columnNum")
+        List<TableRow> rows = makeTableRow(inflater, container, getArguments().getInt("columnNum")
                 , getArguments().getBoolean("hasSaturDay"), getArguments().getBoolean("hasSunDay"));
 
         for (TableRow row : rows) {
             tableLayout.addView(row);
         }
-        Log.e("aaaaaaaaa", "view");
+
         return linearLayout;
     }
 
-    private List<TableRow> makeTableRow(int colunmNum, boolean hasSaturDay, boolean hasSunDay) {
+    /**
+     * 行の作成
+     *
+     * @param colunmNum
+     * @param hasSaturDay
+     * @param hasSunDay
+     * @return
+     */
+    private List<TableRow> makeTableRow(LayoutInflater inflater, ViewGroup container, int colunmNum, boolean hasSaturDay, boolean hasSunDay) {
         List<TableRow> rows = new ArrayList<TableRow>();
 
-        String sql = "select * from " + DatabaseHelper.TIME_TABLE_NAME +
-                " where completed = 0 and hour = ";
+        //曜日コラムのセット
+        TableRow tableRow = (TableRow) inflater.inflate(R.layout.row_7days, container, false);
+        setWeekColumn(tableRow, hasSaturDay, hasSunDay);
+        rows.add(tableRow);
 
+        //各コラムの読み込み
         for (int i = 1; i <= colunmNum; i++) {
 
-            TableRow tableRow = new TableRow(getActivity());
+            String sql = "select * from " + DatabaseHelper.TIME_TABLE_NAME +
+                    " where completed = 0 and hour = " + i + ";";
 
-            //初期化
-            TextView monText = new TextView(getActivity());
-            monText.setText("");
-            TextView tueText = new TextView(getActivity());
-            tueText.setText("");
-            TextView wedText = new TextView(getActivity());
-            wedText.setText("");
-            TextView thurText = new TextView(getActivity());
-            thurText.setText("");
-            TextView friText = new TextView(getActivity());
-            friText.setText("");
-            TextView satText = new TextView(getActivity());
-            satText.setText("");
-            TextView sunText = new TextView(getActivity());
-            sunText.setText("");
 
+            tableRow = (TableRow) inflater.inflate(R.layout.row_7days, container, false);
+
+            List<TextView> textViews = makeWeekTextView(tableRow, hasSaturDay, hasSunDay, i);
 
             Cursor cursor = null;
             try {
-                sql += i + ";";
+
                 cursor = databaseHelper.execRawQuery(sql);
 
                 if (cursor.moveToFirst()) {//データがあるとき
                     do {
                         String day = cursor.getString(cursor.getColumnIndex("day"));
+                        String subject = breakString(cursor.getString(cursor.getColumnIndex("subject")));
                         if (AppConstants.MONDAY.equals(day)) {
-                            monText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            textViews.get(1).setText(subject);
                         } else if (AppConstants.TUESDAYDAY.equals(day)) {
-                            tueText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            textViews.get(2).setText(subject);
                         } else if (AppConstants.WEDNESDAY.equals(day)) {
-                            wedText.setText(cursor.getString(cursor.getColumnIndex("subject")));
-                        } else if (AppConstants.TUESDAYDAY.equals(day)) {
-                            thurText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            textViews.get(3).setText(subject);
+                        } else if (AppConstants.THURSDAY.equals(day)) {
+                            textViews.get(4).setText(subject);
                         } else if (AppConstants.FRIDAY.equals(day)) {
-                            friText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            textViews.get(5).setText(subject);
                         } else if (AppConstants.SATURDAY.equals(day)) {
-                            satText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            textViews.get(6).setText(subject);
                         } else if (AppConstants.SUNDAY.equals(day)) {
-                            sunText.setText(cursor.getString(cursor.getColumnIndex("subject")));
+                            if (hasSaturDay){
+                                textViews.get(7).setText(subject);
+                            }else {
+                                textViews.get(6).setText(subject);
+                            }
+
                         }
                     } while (cursor.moveToNext());
                 }
@@ -120,21 +126,106 @@ public class FragmentWeek extends Fragment {
                 e.printStackTrace();
             }
 
-            tableRow.addView(monText);
-            tableRow.addView(tueText);
-            tableRow.addView(wedText);
-            tableRow.addView(thurText);
-            tableRow.addView(friText);
-            if (hasSaturDay) {
-                tableRow.addView(satText);
-            }
-            if (hasSunDay) {
-                tableRow.addView(sunText);
-            }
-
             rows.add(tableRow);
         }
         return rows;
     }
+
+    /**
+     * ２文字ごとに改行する
+     * @return
+     */
+    private String breakString(String line){
+        int lineSize = line.length();
+        String newString = "";
+
+        for (int i = 1; i <= lineSize ;i++){
+            newString += line.charAt(i-1);
+            if(i%2 == 0){
+                newString += "\n";
+            }
+        }
+        return newString;
+    }
+
+    /**
+     * 曜日欄の設定
+     *
+     * @param tableRow
+     * @param hasSat
+     * @param hasSun
+     */
+    private void setWeekColumn(TableRow tableRow, boolean hasSat, boolean hasSun) {
+
+        TextView timeText = (TextView) tableRow.findViewById(R.id.days_time);
+        timeText.setText("時限");
+        TextView monText = (TextView) tableRow.findViewById(R.id.days_mon);
+        monText.setText("月曜");
+        TextView tueText = (TextView) tableRow.findViewById(R.id.days_tue);
+        tueText.setText("火曜");
+        TextView wedText = (TextView) tableRow.findViewById(R.id.days_wed);
+        wedText.setText("水曜");
+        TextView thurText = (TextView) tableRow.findViewById(R.id.days_thur);
+        thurText.setText("木曜");
+        TextView friText = (TextView) tableRow.findViewById(R.id.days_fri);
+        friText.setText("金曜");
+        TextView satText = (TextView) tableRow.findViewById(R.id.days_sat);
+        satText.setText("土曜");
+        TextView sunText = (TextView) tableRow.findViewById(R.id.days_sun);
+        sunText.setText("日曜");
+
+        //いらない列は削除
+        if (!hasSat){
+            tableRow.removeView(tableRow.findViewById(R.id.days_sat));
+        }
+
+        if (!hasSun) {
+            tableRow.removeView(tableRow.findViewById(R.id.days_sun));
+        }
+    }
+
+
+    /**
+     * 各コラムの設定
+     *
+     * @param tableRow
+     * @param hasSat
+     * @param hasSun
+     * @param time
+     * @return
+     */
+    private List<TextView> makeWeekTextView(TableRow tableRow, boolean hasSat, boolean hasSun, int time) {
+
+        List<TextView> views = new ArrayList<TextView>();
+
+        TextView timeText = (TextView) tableRow.findViewById(R.id.days_time);
+        timeText.setText(" " + time + " ");
+        TextView monText = (TextView) tableRow.findViewById(R.id.days_mon);
+        TextView tueText = (TextView) tableRow.findViewById(R.id.days_tue);
+        TextView wedText = (TextView) tableRow.findViewById(R.id.days_wed);
+        TextView thurText = (TextView) tableRow.findViewById(R.id.days_thur);
+        TextView friText = (TextView) tableRow.findViewById(R.id.days_fri);
+        TextView satText = (TextView) tableRow.findViewById(R.id.days_sat);
+        TextView sunText = (TextView) tableRow.findViewById(R.id.days_sun);
+
+        views.add(timeText);
+        views.add(monText);
+        views.add(tueText);
+        views.add(wedText);
+        views.add(thurText);
+        views.add(friText);
+        views.add(satText);
+        views.add(sunText);
+
+        if (!hasSun) {
+            tableRow.removeView(tableRow.findViewById(R.id.days_sat));
+        }
+        if (!hasSat) {
+            tableRow.removeView(tableRow.findViewById(R.id.days_sun));
+        }
+
+        return views;
+    }
+
 
 }

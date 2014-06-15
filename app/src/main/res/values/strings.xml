@@ -20,5 +20,9 @@
     <string name="thursday">木</string>
     <string name="friday">金</string>
     <string name="null1">null1</string>
-
+    <color name="olive">#808000</color>
+    <color name="chocolate">#d2691e</color>
+    <color name="grey05">#cccccc</color>
+    <color name="white">#FFFFFF</color>
+    <color name="Black">#000000</color>
 </resources>

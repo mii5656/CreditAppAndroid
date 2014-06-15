@@ -421,14 +421,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             insertData(makeTimeTableJSON("前期", AppConstants.MONDAY,1,"数学","F201","共通",0,2,0));
             insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,2,"数学1","F201","共通",0,2,0));
             insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,3,"数学2","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,4,"数学3","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,5,"数学4","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,4,"科学技術表現","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,5,"数学あ","F201","共通",0,2,0));
 
             insertData(makeTimeTableJSON("前期",AppConstants.TUESDAYDAY, 1,"英語","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.TUESDAYDAY,5,"数学あ","F201","共通",0,2,0));
 
             insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,3,"英語2","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,5,"数学あ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,4,"数学あああああああ","F201","共通",0,2,0));
+
+            insertData(makeTimeTableJSON("前期",AppConstants.THURSDAY,5,"数学あ","F201","共通",0,2,0));
+
             insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,4,"英語3","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学4","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,5,"数学あ","F201","共通",0,2,0));
+
+            insertData(makeTimeTableJSON("前期",AppConstants.SUNDAY,5,"数学あああああああ","F201","共通",0,2,0));
+
+            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学あ","F201","共通",0,2,0));
 
         } catch (IOException e) {
             e.printStackTrace();
