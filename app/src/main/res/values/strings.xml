@@ -20,6 +20,9 @@
     <string name="thursday">木</string>
     <string name="friday">金</string>
     <string name="null1">null1</string>
+    <string name="subj_message1">取得済科目を入力してください。</string>
+    <string name="subj_message2">取得済科目がない方はそのままにしてください。</string>
+    <string name="add">追加</string>
     <color name="olive">#808000</color>
     <color name="chocolate">#d2691e</color>
     <color name="grey05">#cccccc</color>

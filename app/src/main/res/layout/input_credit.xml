@@ -7,36 +7,30 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:text="取得済科目を入力してください。"/>
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/subj_message1"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:text="取得済科目がない方はそのままにしてください。"/>
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:text="@string/subj_message2"/>
 
     <ScrollView
         android:id="@+id/ScrollView"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp">
-
-        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent">
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-            <TableRow>
-
-            </TableRow>
-
+            android:layout_height="wrap_content"
+            android:id="@+id/week_table"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:background="@color/grey05"
+            android:padding="2dp">
         </TableLayout>
-
     </ScrollView>
-
 </LinearLayout>

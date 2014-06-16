@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity {
             //初期値入力
             dbHelper.initalInsertRitsData();
             dbHelper.insertDB();
-            settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true);
+            settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true).commit();
         }
 
 
