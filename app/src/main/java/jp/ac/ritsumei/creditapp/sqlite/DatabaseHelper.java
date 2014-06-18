@@ -1,5 +1,6 @@
 package jp.ac.ritsumei.creditapp.sqlite;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -312,6 +313,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    /**
+     * データの更新
+     * @param tableName
+     * @param where 条件
+     * @throws IOException
+     */
+    public void updateData(String tableName,ContentValues cv,String where) throws IOException{
+        SQLiteDatabase db = getWritableDatabase();
+        if (db.isReadOnly()){
+            throw new IOException("Cannot get writable access to DB.");
+        }
+
+        SQLiteStatement stmt = null;
+        db.beginTransaction();
+        try {
+            db.update(tableName,cv,where,null);
+        }catch (IllegalStateException e) {
+            Log.w(getClass().getSimpleName(),
+                    "perhaps, service was restarted or un/reinstalled.", e);
+        }finally {
+            db.endTransaction();
+            if(stmt != null){
+                stmt.clearBindings();
+                stmt.close();
+            }
+        }
+    }
+
+
+
 
     /**
      * カリキュラム情報の入力
@@ -448,22 +479,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //TODO あとで消す  登録された時間割 デバッグ用
     public void insertDB(){
-
         try {
             insertData(makeTimeTableJSON("前期", AppConstants.MONDAY,1,"数学","F201","あ","共通",0,2,0));
             insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,2,"数学1","F201","あ","共通",0,2,0));
             insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,3,"数学2","F201","あ","共通",0,2,0));
 
             insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,4,"数学あああああああ","F201","あ","共通",0,2,0));
-
-            insertData(makeTimeTableJSON("前期",AppConstants.THURSDAY,5,"数学あ","F201","あ","共通",0,2,0));
-
-            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,4,"英語3","F201","共通","あ",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,5,"数学あ","F201","共通","あ",0,2,0));
-
-            insertData(makeTimeTableJSON("前期",AppConstants.SUNDAY,5,"数学あああああああ","F201","あ","共通",0,2,0));
-
-            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学あ","F201","あ","共通",0,2,0));
 
         } catch (IOException e) {
             e.printStackTrace();

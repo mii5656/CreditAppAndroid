@@ -24,9 +24,8 @@
 
     <ScrollView
         android:id="@+id/ScrollView"
-        android:layout_height="413dp"
+        android:layout_height="398dp"
         android:layout_width="match_parent"
-        android:layout_weight="0.26"
         android:fadeScrollbars="false">
         <TableLayout
             android:layout_width="match_parent"

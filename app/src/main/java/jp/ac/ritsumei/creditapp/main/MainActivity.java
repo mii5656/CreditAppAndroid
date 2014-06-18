@@ -62,6 +62,7 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
+        startActivity(new Intent(MainActivity.this,TimetableRegistrationActivity.class));
     }
 
 

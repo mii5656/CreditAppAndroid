@@ -1,12 +1,17 @@
 package jp.ac.ritsumei.creditapp.view;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -14,15 +19,20 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jp.ac.ritsumei.creditapp.app.R;
 import jp.ac.ritsumei.creditapp.sqlite.DatabaseHelper;
+import jp.ac.ritsumei.creditapp.util.AppConstants;
 
 
 public class FragmentDays extends Fragment {
 
     private static DatabaseHelper databaseHelper;
+
+    private Map<String,TextView> attendTextViews;
 
     /**
      * フラグメントを作成するためのファクトリメソッド
@@ -53,9 +63,7 @@ public class FragmentDays extends Fragment {
 
         List<CustomData> objects = getRowData(savedInstanceState);
 
-//        for (CustomData c : objects) {
-//            Log.e("customData", c.getHour() + "," + c.getSubject() + "," + c.getRoom() + "," + c.getAttendNum() + "," + c.isButton());
-//        }
+        attendTextViews = new HashMap<String, TextView>();
 
         CustomAdapter customAdapater = new CustomAdapter(getActivity(), 0, objects);
 
@@ -79,7 +87,7 @@ public class FragmentDays extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // 特定の行(position)のデータを得る
-            CustomData item = getItem(position);
+            final CustomData item = getItem(position);
 
             // convertViewは使い回しされている可能性があるのでnullの時だけ新しく作る
             if (null == convertView) {
@@ -95,7 +103,7 @@ public class FragmentDays extends Fragment {
                 subjText.setText(item.getSubject());
 
                 //教室
-                TextView roomText = (TextView) convertView.findViewById(R.id.textViewRoomColumn);
+                final TextView roomText = (TextView) convertView.findViewById(R.id.textViewRoomColumn);
                 roomText.setText(item.getRoom());
 
                 //回数
@@ -105,26 +113,34 @@ public class FragmentDays extends Fragment {
                 } else {
                     attendNumText.setText("" + item.getAttendNum());
                 }
+                attendTextViews.put(item.getSubject(),attendNumText);
 
 
                 Button attendButton = (Button) convertView.findViewById(R.id.AttendButton);
                 if (item.isButton()) {
-        //TODO ボタンの動作
-
-
+                    attendButton.setOnClickListener(
+                            new attendButtonClickListner(item.getAttendNum(),item.getSubject())
+                    );
                 } else {
                     attendButton.setVisibility(View.INVISIBLE);
                 }
             }
-
             return convertView;
         }
     }
 
 
+
+
+
+    /**
+     * リストビュー用の行用のカスタムデータの取得
+     * @param bundle
+     * @return
+     */
     public List<CustomData> getRowData(Bundle bundle) {
         String sql = "select * from " + DatabaseHelper.TIME_TABLE_NAME +
-                " where completed = 0 and day = \"" + getArguments().getString("day") + "\";";
+                " where completed = 0 and day = \"" + getArguments().getString("day") + "\" order by hour;";
 
 
         List<CustomData> objects = new ArrayList<CustomData>();
@@ -148,12 +164,11 @@ public class FragmentDays extends Fragment {
                             objects.add(setNoData(j));
                             count++;
                         }
-                    } else {
-                        count++;
                     }
                     objects.add(data);
-
+                    count++;
                 } while (cursor.moveToNext());
+
             } else {//データが１つもない
                 for (int i = 1; i <= getArguments().getInt("columnNum"); i++) {
                     objects.add(setNoData(i));
@@ -163,7 +178,7 @@ public class FragmentDays extends Fragment {
 
             cursor.close();
 
-            if (count != getArguments().getInt("columnNum")) {
+            if (count <= getArguments().getInt("columnNum")) {
                 for (int i = count; i <= getArguments().getInt("columnNum"); i++) {
                     objects.add(setNoData(i));
                 }
@@ -176,6 +191,11 @@ public class FragmentDays extends Fragment {
     }
 
 
+    /**
+     * 何もないデータのセット
+     * @param columnNum
+     * @return
+     */
     private CustomData setNoData(int columnNum) {
         CustomData data = new CustomData();
         data.setHour(columnNum);
@@ -184,5 +204,65 @@ public class FragmentDays extends Fragment {
         data.setAttendNum(-1);
         data.setButton(false);
         return data;
+    }
+
+    /**
+     * 出席カウント用ダイアログリスナー
+     */
+    private class YesDialogClickListener implements DialogInterface.OnClickListener{
+       int attendNum;
+       String subjName;
+
+        public YesDialogClickListener(int attend,String suj){
+            this.attendNum = attend;
+            this.subjName = suj;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            //OKボタンが押下された時
+            ContentValues cv = new ContentValues();
+            cv.put("attendance",attendNum);
+
+            try {
+                databaseHelper.updateData(DatabaseHelper.TIME_TABLE_NAME, cv, "subject = \"" + subjName + "\"");
+
+                attendTextViews.get(subjName).setText(""+attendNum);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * 出席カウント用ボタンリスナー
+     */
+    private class attendButtonClickListner implements View.OnClickListener{
+
+        int attend;
+        String subj;
+
+        public attendButtonClickListner(int attend,String subj){
+            this.attend = attend;
+            this.subj = subj;
+        }
+
+        @Override
+        public void onClick(View v) {
+            attend++;
+            //出席ダイアログ
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("出席")
+                    .setCancelable(true)
+                    .setMessage("出席回数を増やしますか?")
+                    .setPositiveButton("はい", new YesDialogClickListener(attend,subj))
+                    .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //キャンセルボタンが押下された時
+                        }
+                    }).show();
+        }
     }
 }
