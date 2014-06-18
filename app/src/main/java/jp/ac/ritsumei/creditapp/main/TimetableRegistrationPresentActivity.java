@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.DialogPreference;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +32,7 @@ import jp.ac.ritsumei.creditapp.app.R;
 import jp.ac.ritsumei.creditapp.sqlite.DatabaseHelper;
 import jp.ac.ritsumei.creditapp.util.AppConstants;
 
-public class TimetableRegistrationActivity extends Activity {
+public class TimetableRegistrationPresentActivity extends Activity {
 
     /**
      * 画面全体のテーブル
@@ -64,6 +62,12 @@ public class TimetableRegistrationActivity extends Activity {
 
         setContentView(R.layout.input_credit);
 
+        TextView textView1 = (TextView) findViewById(R.id.message_text_credit);
+        textView1.setText("今学期登録する科目を入力してください");
+        TextView textView2 = (TextView) findViewById(R.id.message_text_credit2);
+        textView2.setText("今学期登録する科目がない場合は\nそのままにしてください。あとから修正もできます。");
+
+
         tableLayout = (TableLayout) findViewById(R.id.register_table);
 
 
@@ -76,8 +80,8 @@ public class TimetableRegistrationActivity extends Activity {
             @Override
             public void onClick(View v) {
                 SharedPreferences preferences = getSharedPreferences(AppConstants.PREF_NAME,MODE_PRIVATE);
-                preferences.edit().putString(AppConstants.SETTING_STATE,AppConstants.STATE_PRESENT_SUBJECT).commit();
-                startActivity(new Intent(TimetableRegistrationActivity.this,TimetableRegistrationPresentActivity.class));
+                preferences.edit().putString(AppConstants.SETTING_STATE,AppConstants.STATE_TIMETABLE).commit();
+                startActivity(new Intent(TimetableRegistrationPresentActivity.this,TimetableActivity.class));
             }
         });
     }
@@ -241,7 +245,7 @@ public class TimetableRegistrationActivity extends Activity {
                                     brand,
                                     0,
                                     Integer.parseInt((String) creditSpiner.getSelectedItem()),
-                                    1
+                                    0
                             ));
                             ArrayAdapter<String> adapter = listAdapters.get(brand);
                             adapter.add((subjeText.getText()).toString());
@@ -251,7 +255,6 @@ public class TimetableRegistrationActivity extends Activity {
                     .show(); //ダイアログ表示
         }
     }
-
 
     private String changeDays(String day){
 
@@ -272,9 +275,6 @@ public class TimetableRegistrationActivity extends Activity {
         }
     }
 
-    /**
-     * クリックイベントリスナー(はいのとき)
-     */
     private class YesDialogClickListener implements DialogInterface.OnClickListener{
         ListView listView;
         int position;

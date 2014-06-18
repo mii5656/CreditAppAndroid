@@ -106,9 +106,11 @@ public class FragmentDays extends Fragment {
                     attendNumText.setText("" + item.getAttendNum());
                 }
 
-                //TODO ボタンの動作
+
                 Button attendButton = (Button) convertView.findViewById(R.id.AttendButton);
                 if (item.isButton()) {
+        //TODO ボタンの動作
+
 
                 } else {
                     attendButton.setVisibility(View.INVISIBLE);

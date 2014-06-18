@@ -34,10 +34,6 @@ public class MainActivity extends ActionBarActivity {
         //dataベースヘルパーを作る
         dbHelper = new DatabaseHelper(this.getApplication());
 
-        //TODO sqliteのチェック
-        checkSQLite();
-
-
         //状態確認用
          settingPref =
                 this.getSharedPreferences(AppConstants.PREF_NAME, Context.MODE_PRIVATE );
@@ -47,9 +43,9 @@ public class MainActivity extends ActionBarActivity {
             //初期値入力
             dbHelper.initalInsertRitsData();
             dbHelper.insertDB();
+            dbHelper.insertUser();
             settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true).commit();
         }
-
 
         //保存されている値を読み出す 第２引数は保存されてなかった場合
         String state = settingPref.getString(AppConstants.SETTING_STATE, AppConstants.STATE_CARRICULUM);
@@ -66,7 +62,6 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
-        startActivity(new Intent(MainActivity.this,TimetableActivity.class));
     }
 
 
@@ -88,39 +83,5 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    private void checkSQLite(){
-
-        //dataを入れる。
-        JSONArray datum = new JSONArray();
-        JSONObject table = new JSONObject();
-        JSONObject data = new JSONObject();
-        try {
-            table.put("table_name", DatabaseHelper.USER_TABLE_NAME);
-            datum.put(table);
-            data.put("sum_credit",3);
-            datum.put(data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        dbHelper.insertDataAsyncTask(datum);
-
-        //dataを読み込む = select分の実行と読み込み
-        try {
-            Cursor cursor = dbHelper.execRawQuery("select * from "+DatabaseHelper.USER_TABLE_NAME+";");
-            Log.e("inserted data is " , ""+1);
-            if(cursor.moveToFirst()){
-                do{
-                    int sum_credit = cursor.getInt(cursor.getColumnIndex("sum_credit"));
-                    Log.e("inserted data is " , ""+sum_credit);
-                }while(cursor.moveToNext());
-            }
-            cursor.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

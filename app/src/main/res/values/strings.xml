@@ -21,11 +21,59 @@
     <string name="friday">金</string>
     <string name="null1">null1</string>
     <string name="subj_message1">取得済科目を入力してください。</string>
-    <string name="subj_message2">取得済科目がない方はそのままにしてください。</string>
+    <string name="subj_message2">取得済科目がない方はそのままにしてください。\nあとから修正もできます。</string>
     <string name="add">追加</string>
+    <string name="register_message">科目を登録します。情報を入力してください。</string>
+    <string name="teacher">先生</string>
+    <string name="term">ターム</string>
+    <string name="days">曜日</string>
+    <string name="credit">単位</string>
+    <string name="register">登録</string>
+    <string name="complete">完了</string>
     <color name="olive">#808000</color>
     <color name="chocolate">#d2691e</color>
     <color name="grey05">#cccccc</color>
     <color name="white">#FFFFFF</color>
     <color name="Black">#000000</color>
+    <string-array name="time_select">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="days_select">
+        <item>月</item>
+        <item>火</item>
+        <item>水</item>
+        <item>木</item>
+        <item>金</item>
+        <item>土</item>
+        <item>日</item>
+    </string-array>
+    <string-array name="term_select">
+        <item>前期</item>
+        <item>後期</item>
+        <item>通年</item>
+        <item>夏期</item>
+        <item>春期</item>
+        <item>冬期</item>
+    </string-array>
+    <string-array name="credit_select">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
 </resources>

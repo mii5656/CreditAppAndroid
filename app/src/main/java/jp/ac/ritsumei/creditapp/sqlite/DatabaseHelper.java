@@ -53,7 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				USER_TABLE_NAME + "("  + BaseColumns._ID + " INTEGER PRIMARY KEY, "
                         + "university TEXT, department TEXT, discipline TEXT, year INTEGER)",
                 TIME_TABLE_NAME + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, "
-                        + "term TEXT, day TEXT, hour INTEGER,  subject TEXT, room TEXT," +
+                        + "term TEXT, day TEXT, hour INTEGER,  subject TEXT, room TEXT,teacher TEXT," +
                         " brand TEXT, attendance INTEGER, credit INTEGER, completed INTEGER)"
 	};
 
@@ -227,8 +227,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                  }
              }else if (TIME_TABLE_NAME.equals(dbName.getString("table_name"))){
                 stmt = db.compileStatement("INSERT INTO " + TIME_TABLE_NAME +
-                        "(term , day,hour, subject, room, brand, attendance, credit,completed) " +
-                        "VALUES(?, ?, ?, ? ,? ,? ,?,?,?)");
+                        "(term , day,hour, subject, room,teacher, brand, attendance, credit,completed) " +
+                        "VALUES(?, ?, ?, ?,? ,? ,? ,?,?,?)");
                 for (int i = 1 ; i < scanResults.length() ; i++) {
                     JSONObject datas = (JSONObject) scanResults.get(i);
 
@@ -237,10 +237,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     stmt.bindDouble(3, datas.getInt("hour"));
                     stmt.bindString(4, datas.getString("subject"));
                     stmt.bindString(5, datas.getString("room"));
-                    stmt.bindString(6, datas.getString("brand"));
-                    stmt.bindDouble(7, datas.getInt("attendance"));
-                    stmt.bindDouble(8, datas.getInt("credit"));
-                    stmt.bindDouble(9, datas.getInt("completed"));
+                    stmt.bindString(6, datas.getString("teacher"));
+                    stmt.bindString(7, datas.getString("brand"));
+                    stmt.bindDouble(8, datas.getInt("attendance"));
+                    stmt.bindDouble(9, datas.getInt("credit"));
+                    stmt.bindDouble(10, datas.getInt("completed"));
 
                     stmt.executeInsert();
                 }
@@ -280,6 +281,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return null;
 		}
 	}
+
+
+    /**
+     * データの削除
+     * @param tableName
+     * @param where 条件
+     * @throws IOException
+     */
+    public void deleteData(String tableName,String where) throws IOException{
+        SQLiteDatabase db = getWritableDatabase();
+        if (db.isReadOnly()){
+            throw new IOException("Cannot get writable access to DB.");
+        }
+
+        SQLiteStatement stmt = null;
+        db.beginTransaction();
+        try {
+            db.delete(tableName,where,null);
+        }catch (IllegalStateException e) {
+            Log.w(getClass().getSimpleName(),
+                    "perhaps, service was restarted or un/reinstalled.", e);
+        }finally {
+            db.endTransaction();
+            if(stmt != null){
+                stmt.clearBindings();
+                stmt.close();
+            }
+        }
+    }
+
 
 
     /**
@@ -386,7 +417,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public JSONArray makeTimeTableJSON(String term,String day,int hour,String subject ,String room
-            ,String brand,int attendance,int credit,int completed){
+            ,String teacher,String brand,int attendance,int credit,int completed){
         JSONArray timeTableJSON = new JSONArray();
 
         JSONObject table = new JSONObject();
@@ -400,6 +431,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             data.put("hour",hour);
             data.put("subject",subject);
             data.put("room",room);
+            data.put("teacher",teacher);
             data.put("brand",brand);
             data.put("attendance",attendance);
             data.put("credit",credit);
@@ -418,28 +450,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void insertDB(){
 
         try {
-            insertData(makeTimeTableJSON("前期", AppConstants.MONDAY,1,"数学","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,2,"数学1","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,3,"数学2","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,4,"科学技術表現","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,5,"数学あ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期", AppConstants.MONDAY,1,"数学","F201","あ","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,2,"数学1","F201","あ","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.MONDAY,3,"数学2","F201","あ","共通",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.TUESDAYDAY, 1,"英語","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.TUESDAYDAY,5,"数学あ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,4,"数学あああああああ","F201","あ","共通",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,3,"英語2","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,5,"数学あ","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.WEDNESDAY,4,"数学あああああああ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.THURSDAY,5,"数学あ","F201","あ","共通",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.THURSDAY,5,"数学あ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,4,"英語3","F201","共通","あ",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,5,"数学あ","F201","共通","あ",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,4,"英語3","F201","共通",0,2,0));
-            insertData(makeTimeTableJSON("前期",AppConstants.FRIDAY,5,"数学あ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.SUNDAY,5,"数学あああああああ","F201","あ","共通",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.SUNDAY,5,"数学あああああああ","F201","共通",0,2,0));
+            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学あ","F201","あ","共通",0,2,0));
 
-            insertData(makeTimeTableJSON("前期",AppConstants.SATURDAY,5,"数学あ","F201","共通",0,2,0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void insertUser(){
+        try {
+            insertData(makeUserJSON("立命館大学", "情報理工学部", "", 2012));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

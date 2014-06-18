@@ -62,6 +62,8 @@ public class FragmentWeek extends Fragment {
         return linearLayout;
     }
 
+
+
     /**
      * 行の作成
      *
@@ -124,11 +126,11 @@ public class FragmentWeek extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             rows.add(tableRow);
         }
         return rows;
     }
+
 
     /**
      * ２文字ごとに改行する
