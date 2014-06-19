@@ -2,6 +2,7 @@ package jp.ac.ritsumei.creditapp.main;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import jp.ac.ritsumei.creditapp.app.R;
 import jp.ac.ritsumei.creditapp.sqlite.DatabaseHelper;
 import jp.ac.ritsumei.creditapp.util.AppConstants;
 import jp.ac.ritsumei.creditapp.view.FragmentDays;
+import jp.ac.ritsumei.creditapp.view.FragmentMonth;
 import jp.ac.ritsumei.creditapp.view.FragmentWeek;
 
 public class TimetableActivity extends ActionBarActivity {
@@ -35,6 +37,7 @@ public class TimetableActivity extends ActionBarActivity {
     private boolean hasSaturDay;
     private boolean hasSunDay;
     private int columnNum;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +139,7 @@ public class TimetableActivity extends ActionBarActivity {
         mTabFragments.add(FragmentDays.newInstance(AppConstants.THURSDAY, columnNum, databaseHelper));
         mTabFragments.add(FragmentDays.newInstance(AppConstants.FRIDAY, columnNum, databaseHelper));
 
+        mTabFragments.add(new FragmentMonth());
 
         mActionBar.addTab(mActionBar.newTab().setText("週").setTabListener(listener));
         mActionBar.addTab(mActionBar.newTab().setText("月").setTabListener(listener));
@@ -155,7 +159,6 @@ public class TimetableActivity extends ActionBarActivity {
         }
 
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
     }
 
 
@@ -180,7 +183,7 @@ public class TimetableActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (AppConstants.CALENDAR.equals(item.getTitle())) {
-
+            startActivity(new Intent(TimetableActivity.this, CalenderActivity.class));
         } else if (AppConstants.SETTING.equals(item.getTitle())) {
 
         }
@@ -229,7 +232,6 @@ public class TimetableActivity extends ActionBarActivity {
 //                    + " : position => " + tab.getPosition());
             // Fragmentの置換
             ft.replace(R.id.timetable_contents, mTabFragments.get(tab.getPosition()));
-
         }
 
         /*

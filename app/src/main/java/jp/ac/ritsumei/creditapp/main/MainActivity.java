@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,34 +37,59 @@ public class MainActivity extends ActionBarActivity {
         dbHelper = new DatabaseHelper(this.getApplication());
 
         //状態確認用
-         settingPref =
-                this.getSharedPreferences(AppConstants.PREF_NAME, Context.MODE_PRIVATE );
+        settingPref =
+                this.getSharedPreferences(AppConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         //データベース情報登録確認
-        if(!settingPref.getBoolean(AppConstants.INSERT_DB_INFO,false)){//登録されてない場合
+        if (!settingPref.getBoolean(AppConstants.INSERT_DB_INFO, false)) {//登録されてない場合
             //初期値入力
             dbHelper.initalInsertRitsData();
             dbHelper.insertDB();
             dbHelper.insertUser();
-            settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO,true).commit();
+            settingPref.edit().putBoolean(AppConstants.INSERT_DB_INFO, true).commit();
         }
 
         //保存されている値を読み出す 第２引数は保存されてなかった場合
         String state = settingPref.getString(AppConstants.SETTING_STATE, AppConstants.STATE_CARRICULUM);
 
         //TODO 画面遷移
-        if(AppConstants.STATE_TIMETABLE.equals(state)){//時間割画面
+        if (AppConstants.STATE_TIMETABLE.equals(state)) {//時間割画面
 
-        }else if(AppConstants.STATE_CARRICULUM.equals(state)){//初期画面
-             //ボタンの登録、読み込み DBから
+        } else if (AppConstants.STATE_CARRICULUM.equals(state)) {//初期画面
+            //ボタンの登録、読み込み DBから
 
-        }else if(AppConstants.STATE_PRESENT_SUBJECT.equals(state)){//時間割登録画面
+            Spinner s1 = (Spinner) findViewById(R.id.spinner1);
+            Spinner s2 = (Spinner) findViewById(R.id.spinner2);
+            Spinner s3 = (Spinner) findViewById(R.id.spinner3);
 
-        }else{//取得済み科目登録画面
+
+            try {
+                Cursor cursor = dbHelper.execRawQuery("select distinct university from curriculum;");
+
+                ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        ad.add(cursor.getString(cursor.getColumnIndex("curriculum")));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                //s1に項目オブジェクトをセット
+                s1.setAdapter(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //TODO s2 s3 s1にクリックリスナーを付けて、s1が選択されたらs1の大学でs2のセレクト文を実行して のようにどんどん
+
+
+        } else if (AppConstants.STATE_PRESENT_SUBJECT.equals(state)) {//時間割登録画面
+
+        } else {//取得済み科目登録画面
 
         }
 
-        startActivity(new Intent(MainActivity.this,TimetableRegistrationActivity.class));
+        startActivity(new Intent(MainActivity.this, TimetableRegistrationActivity.class));
     }
 
 
