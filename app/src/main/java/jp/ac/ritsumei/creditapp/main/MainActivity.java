@@ -9,8 +9,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,21 +69,105 @@ public class MainActivity extends ActionBarActivity {
             try {
                 Cursor cursor = dbHelper.execRawQuery("select distinct university from curriculum;");
 
-                ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+                ArrayAdapter ad1 = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
 
                 if (cursor.moveToFirst()) {
                     do {
-                        ad.add(cursor.getString(cursor.getColumnIndex("curriculum")));
+                        ad1.add(cursor.getString(cursor.getColumnIndex("curriculum")));
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
                 //s1に項目オブジェクトをセット
-                s1.setAdapter(ad);
+                s1.setAdapter(ad1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             //TODO s2 s3 s1にクリックリスナーを付けて、s1が選択されたらs1の大学でs2のセレクト文を実行して のようにどんどん
+
+            // スピナーのアイテムが選択された時に呼び出されるコールバックリスナーを登録します
+            s1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Spinner spinner = (Spinner) parent;
+                    // 選択されたアイテムを取得します
+                    String item = (String) spinner.getSelectedItem();
+                    Toast.makeText(MainActivity.this, item, Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                }
+            });
+
+
+            String univ_name = (String) s1.getSelectedItem();
+            String sql = "select distinct department from curriculum where university = " + univ_name + ";";
+            Cursor cursor = null;
+
+            try {
+                cursor = dbHelper.execRawQuery(sql);
+
+                ArrayAdapter ad2 = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        ad2.add(cursor.getString(cursor.getColumnIndex("curriculum")));
+                    } while (cursor.moveToNext());
+                }
+
+                //s2に項目オブジェクトをセット
+                s2.setAdapter(ad2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            s2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Spinner spinner = (Spinner) parent;
+                    String item = (String) spinner.getSelectedItem();
+                    Toast.makeText(MainActivity.this, item, Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                }
+            });
+
+            String dep_name = (String) s2.getSelectedItem();
+            String sql2 = "select distinct year from curriculum where department = " + dep_name+ ";";
+            cursor = null;
+
+            try {
+                cursor = dbHelper.execRawQuery(sql2);
+
+                ArrayAdapter ad3 = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        ad3.add(cursor.getString(cursor.getColumnIndex("curriculum")));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                //s3に項目オブジェクトをセット
+                s3.setAdapter(ad3);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            s1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Spinner spinner = (Spinner) parent;
+                    String item = (String) spinner.getSelectedItem();
+                    Toast.makeText(MainActivity.this, item, Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                }
+            });
+
+
 
 
         } else if (AppConstants.STATE_PRESENT_SUBJECT.equals(state)) {//時間割登録画面
