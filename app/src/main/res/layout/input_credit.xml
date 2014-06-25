@@ -5,14 +5,30 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/message_text_credit"
-        android:text="@string/subj_message1"/>
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:id="@+id/message_text_credit"
+            android:text="@string/subj_message1"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/complete"
+            android:id="@+id/complete_button"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,7 +40,7 @@
 
     <ScrollView
         android:id="@+id/ScrollView"
-        android:layout_height="398dp"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:fadeScrollbars="false">
         <TableLayout
@@ -37,10 +53,4 @@
         </TableLayout>
     </ScrollView>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/complete"
-        android:id="@+id/complete_button"
-        android:layout_gravity="center_horizontal" />
 </LinearLayout>

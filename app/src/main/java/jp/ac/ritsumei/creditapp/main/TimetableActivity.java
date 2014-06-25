@@ -4,6 +4,7 @@ package jp.ac.ritsumei.creditapp.main;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -183,7 +184,16 @@ public class TimetableActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (AppConstants.CALENDAR.equals(item.getTitle())) {
-            startActivity(new Intent(TimetableActivity.this, CalenderActivity.class));
+            //startActivity(new Intent(TimetableActivity.this, CalenderActivity.class));
+
+            Intent i = new Intent();
+
+            if(8 < Build.VERSION.SDK_INT){
+                i.setClassName("com.google.android.calendar","com.android.calendar.LaunchActivity");
+            }else{
+                i.setClassName("com.android.calendar","com.android.calendar.LaunchActivity");
+            }
+            startActivity(i);
         } else if (AppConstants.SETTING.equals(item.getTitle())) {
 
         }

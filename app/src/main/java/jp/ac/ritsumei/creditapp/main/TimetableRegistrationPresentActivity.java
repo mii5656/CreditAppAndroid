@@ -265,7 +265,7 @@ public class TimetableRegistrationPresentActivity extends Activity {
         }else if("水".equals(day)){
             return AppConstants.WEDNESDAY;
         }else if("木".equals(day)){
-            return AppConstants.TUESDAYDAY;
+            return AppConstants.THURSDAY;
         }else if("金".equals(day)){
             return AppConstants.FRIDAY;
         }else if("土".equals(day)){

@@ -6,11 +6,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.format.Time;
+import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
 
@@ -23,6 +25,7 @@ public class CalenderActivity extends Activity {
 
     int apiLevel;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,15 @@ public class CalenderActivity extends Activity {
 
                 }
             });
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            calendarView.setLayoutParams(params);
+            if(16 <= apiLevel){
+                calendarView.setFocusedMonthDateColor(Color.BLACK);
+                calendarView.setBackgroundColor(Color.LTGRAY);
+                calendarView.setSelectedWeekBackgroundColor(Color.GRAY);
+                calendarView.setWeekNumberColor(Color.BLACK);
+                calendarView.setWeekSeparatorLineColor(Color.BLACK);
+            }
             linearLayout.addView(calendarView);
         }
     }
@@ -111,7 +123,6 @@ public class CalenderActivity extends Activity {
                 "content://com.android.calendar/events" :
                 "content://calendar/events"), cv);
     }
-
 
     /**
      * DateをENGLISHロケールに変換する
