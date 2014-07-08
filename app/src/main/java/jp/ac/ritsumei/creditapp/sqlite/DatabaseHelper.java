@@ -174,7 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @throws IOException
      * @throws JSONException
      */
-	synchronized protected void insertData(JSONArray scanResults) throws IOException, JSONException {
+    synchronized public void insertData(JSONArray scanResults) throws IOException, JSONException {
 
 		SQLiteDatabase db = getWritableDatabase();
 		if (db.isReadOnly()){
@@ -502,6 +502,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
     }
+
 }
 
 
