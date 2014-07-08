@@ -97,28 +97,5 @@
             android:layout_gravity="center"
             android:id="@+id/button1"/>
 
-        <Space android:layout_width="match_parent"
-            android:layout_height="25dip"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="カリキュラムがない方はこちら"
-            android:id="@+id/textView4"
-            android:layout_gravity="center"/>
-
-        <Space android:layout_width="match_parent"
-            android:layout_height="5dip"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="新規登録"
-            android:layout_gravity="center"
-            android:id="@+id/button2"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
     </LinearLayout>
-
 </RelativeLayout>
